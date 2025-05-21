@@ -42,7 +42,13 @@ export class StudentService {
   deleteStudent(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
+  getStudentById(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${id}`);
+  }
   searchUsers(query: string): Observable<Student[]> {
   return this.http.get<any[]>(`${this.baseUrl}?name_like=${query}`);
+}
+  searchEmail(query: string): Observable<Student[]> {
+  return this.http.get<any[]>(`${this.baseUrl}?email_like=${query}`);
 }
 }

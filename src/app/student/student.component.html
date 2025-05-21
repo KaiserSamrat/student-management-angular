@@ -1,44 +1,69 @@
 <div class="p-4">
-   <h1 class="font-semibold text-lg text-center">Student List</h1>
-    <div class="flex items-center justify-between">
-        <div class="flex gap-3">
-         
-   <input
-  [formControl]="searchControl"
-  type="text"
-  placeholder="Search by name..."
-  class="px-3 py-1 border border-gray-300 rounded-md text-sm"
-/>
-
-        </div>
-        <button (click)="openModal()" class="mb-4 px-4 py-1 bg-green-400 text-white rounded cursor-pointer">Add Student</button>
+  <h1 class="font-semibold text-lg text-center">Student List</h1>
+  <div class="flex items-center justify-between">
+    <div class="flex gap-3">
+      <input
+        [formControl]="searchControl"
+        type="text"
+        placeholder="Search by name..."
+        class="px-3 py-1 border border-gray-300 rounded-md text-sm"
+      />
     </div>
-  
+    <button
+      (click)="goToAddStudent()"
+      class="mb-4 px-4 py-1 bg-green-400 text-white rounded cursor-pointer"
+    >
+      Add Student
+    </button>
+  </div>
 
-  <table class="w-full text-sm text-left text-gray-500">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-      <tr>
-        <th class="px-6 py-3">Name</th>
-        <th class="px-6 py-3">ID</th>
-        <th class="px-6 py-3">Email</th>
-        <th class="px-6 py-3">Address</th>
-        <th class="px-6 py-3">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let student of students" class="bg-white border-b border-gray-300">
-        <td class="px-6 py-4">{{ student.name }}</td>
-        <td class="px-6 py-4">{{ student.id }}</td>
-        <td class="px-6 py-4">{{ student.email }}</td>
-        <td class="px-6 py-4">{{ student.address.city }}</td>
-         <td class="px-6 py-4 flex gap-2">
-            <button class="bg-yellow-200 px-2 py-1 text-black rounded-sm cursor-pointer" (click)="openUpdateModal(student)">Update</button>
-             <button class="bg-red-500 px-2 py-1 text-black rounded-sm cursor-pointer" (click)="deleteConfiramationModal(student.id)">Delete</button>
-         </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="flex justify-center mt-6">
+  <mat-table [dataSource]="dataSource" matSort class="mat-elevation-z1 w-full">
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+      <mat-cell *matCellDef="let student">{{ student.name }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+      <mat-cell *matCellDef="let student">{{ student.id }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Email</mat-header-cell>
+      <mat-cell *matCellDef="let student">{{ student.email }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="address">
+      <mat-header-cell *matHeaderCellDef>Address</mat-header-cell>
+      <mat-cell *matCellDef="let student">{{ student.address.city }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+      <mat-cell *matCellDef="let student">
+        <button
+          class="bg-yellow-300 px-2 py-1 rounded-sm me-2"
+          (click)="goToEditStudent(student.id)"
+        >
+          Update
+        </button>
+        <button
+          class="bg-red-600 px-2 py-1 rounded-sm me-2"
+          (click)="deleteConfiramationModal(student.id)"
+        >
+          Delete
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </mat-table>
+  <mat-paginator
+    [length]="dataSource?.data?.length"
+    [pageSize]="5"
+  ></mat-paginator>
+  <!-- <div class="flex justify-center mt-6">
   <nav class="inline-flex items-center space-x-1 rounded-md shadow-sm bg-white border border-gray-200 px-2 py-1">
     
  
@@ -72,81 +97,93 @@
       &raquo;
     </button>
   </nav>
+</div> -->
 </div>
 
-</div>
-
-
-
-<div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center  backdrop-blur-sm bg-white/30 z-50 rounded  m-auto ">
-  <div class="bg-white p-6 rounded shadow-lg w-96">
-    <h2 class="text-lg font-semibold mb-4 text-center">Add New Student</h2>
-    
-    <label class="block mb-2">
-      Name:
-      <input [(ngModel)]="newStudent.name" class="w-full px-3 py-2 border rounded border-gray-400" />
-    </label>
-    
-    <label class="block mb-2">
-      ID:
-      <input [(ngModel)]="newStudent.id" class="w-full px-3 py-2 border rounded border-gray-400" />
-    </label>
-
-    <label class="block mb-2">
-      Email:
-      <input [(ngModel)]="newStudent.email" class="w-full px-3 py-2 border rounded border-gray-400" />
-    </label>
-
-    <label class="block mb-4">
-      Address:
-      <input [(ngModel)]="newStudent.address" class="w-full px-3 py-2 border rounded border-gray-400" />
-    </label>
-
-    <div class="flex justify-end gap-2">
-      <button (click)="closeModal()" class="px-4 py-2 bg-gray-300 rounded cursor-pointer">Cancel</button>
-      <button (click)="saveStudent()" class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer" [disabled]="isLoading">{{isLoading ? "Saving":"Save"}}</button>
-    </div>
-  </div>
-</div>
-<div *ngIf="deleteModal" class="fixed inset-0 flex items-center justify-center  backdrop-blur-sm bg-white/30 z-50 rounded  m-auto ">
+<!-- <div
+  *ngIf="showModal"
+  class="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/30 z-50 rounded m-auto"
+>
+ 
+</div> -->
+<div
+  *ngIf="deleteModal"
+  class="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/30 z-50 rounded m-auto"
+>
   <div class="bg-white p-6 rounded shadow-lg w-96">
     <h1 class="mb-10">Are you want to delete this student?</h1>
     <div class="flex justify-end gap-2">
-      <button (click)="closeDeleteModal()" class="px-4 py-2 bg-gray-300 rounded cursor-pointer">Cancel</button>
-      <button (click)="deleteStudent()" class="px-4 py-2 bg-red-600 text-white rounded cursor-pointer" [disabled]="deleteLoading">{{deleteLoading? "Deleting":"Delete"}}</button>
+      <button
+        (click)="closeDeleteModal()"
+        class="px-4 py-2 bg-gray-300 rounded cursor-pointer"
+      >
+        Cancel
+      </button>
+      <button
+        (click)="deleteStudent()"
+        class="px-4 py-2 bg-red-600 text-white rounded cursor-pointer"
+        [disabled]="deleteLoading"
+      >
+        {{ deleteLoading ? "Deleting" : "Delete" }}
+      </button>
     </div>
   </div>
-  
-  
 </div>
 
-<div *ngIf="showUpdateModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/30 bg-opacity-50 z-50 rounded-md">
+<!-- <div
+  *ngIf="showUpdateModal"
+  class="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white/30 bg-opacity-50 z-50 rounded-md"
+>
   <div class="bg-white p-6 rounded shadow-lg w-96">
     <h2 class="text-lg font-semibold mb-4">Update Student</h2>
 
     <label class="block mb-2">
       Name:
-      <input [(ngModel)]="selectedStudent.name" class="w-full px-3 py-2 border rounded border-gray-300" />
+      <input
+        [(ngModel)]="selectedStudent.name"
+        class="w-full px-3 py-2 border rounded border-gray-300"
+      />
     </label>
 
     <label class="block mb-2">
       ID:
-      <input [(ngModel)]="selectedStudent.id" class="w-full px-3 py-2 border rounded border-gray-300" disabled  />
+      <input
+        [(ngModel)]="selectedStudent.id"
+        class="w-full px-3 py-2 border rounded border-gray-300"
+        disabled
+      />
     </label>
 
     <label class="block mb-2">
       Email:
-      <input [(ngModel)]="selectedStudent.email" class="w-full px-3 py-2 border rounded border-gray-300" />
+      <input
+        [(ngModel)]="selectedStudent.email"
+        class="w-full px-3 py-2 border rounded border-gray-300"
+      />
     </label>
 
     <label class="block mb-4">
       Address:
-      <input [(ngModel)]="selectedStudent.address" class="w-full px-3 py-2 border rounded border-gray-300" />
+      <input
+        [(ngModel)]="selectedStudent.address.city"
+        class="w-full px-3 py-2 border rounded border-gray-300"
+      />
     </label>
 
     <div class="flex justify-end gap-2">
-      <button (click)="closeUpdateModal()" class="px-4 py-2 bg-gray-300 rounded cursor-pointer">Cancel</button>
-      <button (click)="updateStudent()" class="px-4 py-2 bg-green-600 text-white rounded cursor-pointer">Update</button>
+      <button
+        (click)="closeUpdateModal()"
+        class="px-4 py-2 bg-gray-300 rounded cursor-pointer"
+      >
+        Cancel
+      </button>
+      <button
+        (click)="updateStudent()"
+        class="px-4 py-2 bg-green-600 text-white rounded cursor-pointer"
+      >
+        Update
+      </button>
     </div>
   </div>
-</div>
+</div> -->
+

@@ -1,0 +1,102 @@
+<!-- student-add.component -->
+<form [formGroup]="profileForm" (ngSubmit)="saveStudent()">
+  <div class="bg-white p-6 rounded shadow-lg w-96 mx-auto my-auto">
+    <h2 class="text-lg font-semibold mb-4 text-center"> {{ model === 'add' ? 'Add Student' : 'Update Student' }}</h2>
+
+    <label class="block mb-2">
+      Name:
+      <input
+        formControlName="name"
+        class="w-full px-3 py-2 border rounded border-gray-400"
+      />
+    </label>
+
+    <div
+      *ngIf="
+        profileForm.get('name')?.touched && profileForm.get('name')?.invalid
+      "
+      class="text-red-500 text-sm mt-1"
+    >
+      <div *ngIf="profileForm.get('name')?.errors?.['required']">
+        Name is required.
+      </div>
+      <div *ngIf="profileForm.get('name')?.errors?.['minlength']">
+        Name must be at least 4 characters.
+      </div>
+    </div>
+
+    <label class="block mb-2">
+      ID:
+      <input
+        formControlName="id"
+        class="w-full px-3 py-2 border rounded border-gray-400"
+      />
+    </label>
+    <div
+      *ngIf="profileForm.get('id')?.touched && profileForm.get('id')?.invalid"
+      class="text-red-500 text-sm mt-1"
+    >
+      <div *ngIf="profileForm.get('id')?.errors?.['required']">
+        ID is required.
+      </div>
+    </div>
+
+    <label class="block mb-2">
+      Email:
+      <input
+        formControlName="email"
+        class="w-full px-3 py-2 border rounded border-gray-400"
+      />
+    </label>
+    <div
+  *ngIf="profileForm.get('email')?.touched"
+  class="text-red-500 text-sm mt-1"
+>
+  <div *ngIf="profileForm.get('email')?.errors?.['required']">
+    Email is required.
+  </div>
+  <div *ngIf="profileForm.get('email')?.errors?.['email']">
+    Email format is invalid.
+  </div>
+  <div *ngIf="profileForm.get('email')?.errors?.['emailExists']">
+    This email already exists.
+  </div>
+</div>
+
+    <label class="block mb-4">
+      Address:
+      <input
+        formControlName="address"
+        class="w-full px-3 py-2 border rounded border-gray-400"
+      />
+    </label>
+
+    <div class="flex justify-end gap-2">
+      <button
+        routerLink=""
+        class="px-4 py-2 bg-gray-300 rounded cursor-pointer"
+      >
+        Cancel
+      </button>
+      <!-- <button  class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer" [disabled]="isLoading">{{isLoading ? "Saving":"Save"}}</button> -->
+       
+      <button
+      *ngIf="model==='add'"
+        type="submit"
+        class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer"
+        [disabled]="profileForm.invalid || isLoading"
+      >
+        {{ isLoading ? "Saving" : "Save" }}
+      </button>
+      <button
+      *ngIf="model==='update'"
+        type="submit"
+        class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer"
+        [disabled]="profileForm.invalid "
+      >
+        {{  "Update" }}
+      </button>
+      
+    </div>
+  </div>
+</form>
